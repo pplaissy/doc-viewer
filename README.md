@@ -4,7 +4,7 @@ This source can be used as a starter kit to build a documentation application.
 
 I'm in the process of coding a user help application and I realize that by purging the aspects specific to my environment there remain some general principles that could serve as a starting point for anyone with a similar need.
 
-That's the purpose of this little repo.
+That's the purpose of this little repo. Full article on [code crumbs](https://code-crumbs.pplaissy.fr/).
 
 ## UX
 
