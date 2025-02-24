@@ -47,8 +47,6 @@ The selected entry in the table of contents is modified by :
 - clicking on a tree node
 - redirection from the current article to another article by clicking on a link
 
-Translated with DeepL.com (free version)
-
 ## Patterns
 
 I would like to draw your attention to two particular patterns used here:
