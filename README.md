@@ -1,59 +1,121 @@
 # DocViewer
 
-This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 19.0.6.
+This source can be used as a starter kit to build a documentation application.
 
-## Development server
+I'm in the process of coding a user help application and I realize that by purging the aspects specific to my environment there remain some general principles that could serve as a starting point for anyone with a similar need.
 
-To start a local development server, run:
+That's the purpose of this little repo.
 
-```bash
-ng serve
+## UX
+
+It's a single page divided vertically into two parts.
+
+```html
+<div ...>
+    <p-splitter 
+        ...
+        <ng-template pTemplate>
+            <div ...>
+                <router-outlet name="contents"/>
+            </div>
+        </ng-template>
+        <ng-template pTemplate>
+            <div ..>
+                <div ...>
+                    <router-outlet name="article"/>
+                </div>
+            </div>
+        </ng-template>
+    </p-splitter>
+</div>
 ```
 
-Once the server is running, open your browser and navigate to `http://localhost:4200/`. The application will automatically reload whenever you modify any of the source files.
+A side panel on the right with the tree-structured table of contents.
 
-## Code scaffolding
+The main panel on the left, designed to display the article selected in the table of contents.
 
-Angular CLI includes powerful code scaffolding tools. To generate a new component, run:
+Table of contents data is loaded when the application is started or when the page is refreshed.
 
-```bash
-ng generate component component-name
+Article content is updated when the url is modified, either by :
+
+- selecting a table of contents entry
+- direct entry in the address bar
+- clicking in an article on a link to another article
+
+The selected entry in the table of contents is modified by :
+
+- clicking on a tree node
+- redirection from the current article to another article by clicking on a link
+
+Translated with DeepL.com (free version)
+
+## Patterns
+
+I would like to draw your attention to two particular patterns used here:
+
+- **resolvers** to supply data to components
+- **auxiliary routes**
+
+### Resolvers
+
+A resolver is a service referenced by a route. It can, for example, query an api to retrieve the data required by the component loaded by the route.
+
+```typescript
+// app.routes.ts resolver binding
+// loading TableOfContentsComponent execute ContentResolver
+{            
+    path: '', 
+    outlet: "contents",
+    loadComponent: () => import('./pages/table-of-contents/table-of-contents.component').then(c => c.TableOfContentsComponent),
+    resolve: {
+        docData: ContentResolver
+    }
+}
 ```
 
-For a complete list of available schematics (such as `components`, `directives`, or `pipes`), run:
+The resolver for the table of contents queries the api and returns an array of Content, which is the data model for the documentation entries.
 
-```bash
-ng generate --help
+```typescript
+@Injectable({ providedIn: 'root' })
+export class ContentResolver implements Resolve<Contents[]> {
+  constructor(private api: DocApi) {}
+  resolve(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<Contents[]> {
+    return this.api.getContents$();
+  }
+}
 ```
 
-## Building
+The data supplied by the resolver is retrieved from the component's ngOnInit.
 
-To build the project run:
-
-```bash
-ng build
+```typescript
+ngOnInit(): void {
+    // docData is provided by ContentResolver declared in app.route
+    this.activatedRoute.data.subscribe(({ docData }) => {
+        ...
+    });
+ }
 ```
 
-This will compile your project and store the build artifacts in the `dist/` directory. By default, the production build optimizes your application for performance and speed.
+I use two resolvers, one for the table of contents, one for the content of the selected article.
 
-## Running unit tests
+See [here](https://angular.dev/api/router/Resolve) for full documentation.
 
-To execute unit tests with the [Karma](https://karma-runner.github.io) test runner, use the following command:
+### Auxiliary routes
 
-```bash
-ng test
+Hard to find reliable documentation on the subject. No results on the angular api documentation for a search on “auxiliary”. You have to tinker a bit to find the right syntax for the `[routerLink ]`😓
+
+```html
+<a [routerLink]="['/content', { outlets: {article: article.link} }]">See also</a>
 ```
 
-## Running end-to-end tests
+In the address bar, the url has an unusual shape: `/content/(article:welcome)`
 
-For end-to-end (e2e) testing, run:
+Navigation is divided between **three router-outlets**. The main one, which is the AppComponent template, and the two outlets named in the [DocComponent](#ux).
 
-```bash
-ng e2e
-```
+## To conclude
 
-Angular CLI does not come with an end-to-end testing framework by default. You can choose one that suits your needs.
+Of course, it's all very succinct. The mock is far from producing the experience of a real documentation. You need to be able to structure the content and display images. 
 
-## Additional Resources
+Personally, I write articles in markdown and use the lib [ngx-markdown](https://www.npmjs.com/package/ngx-markdown) to render them in html. I haven't reproduced this part of the code in this template to keep it simple and avoid multiplying the points of attention. I may write an article on this topic in the near future, with a particular focus on the subtleties of managing internal links and downloading images on the fly.
 
-For more information on using the Angular CLI, including detailed command references, visit the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
+Feel free to test it out and let me know if it has been been a good starting point for your own project.

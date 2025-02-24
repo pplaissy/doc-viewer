@@ -1,0 +1,10 @@
+<div class="w-full h-full">
+    <h3 class="px-3">Table of contents</h3>
+    <p-tree class="w-full" 
+        styleClass="p-0 border-0" 
+        selectionMode="single" 
+        [(selection)]="selectedContent"
+        [value]="contents"
+        (selectionChange)="selectedContentChange()" />
+</div>
+

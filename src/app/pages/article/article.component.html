@@ -1,0 +1,8 @@
+@if (article) {
+    <h1>{{article.title}}</h1>
+    <p>{{article.content}}</p>
+    @if (article.link) {
+        <br/>
+        <a [routerLink]="['/content', { outlets: {article: article.link} }]">See also</a>
+    }
+}

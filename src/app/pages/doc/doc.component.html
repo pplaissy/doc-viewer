@@ -1,0 +1,20 @@
+<div class="flex justify-content-center h-full" [style]="{'--font-family': 'Open Sans', lineHeight: '1.6'}">
+    <p-splitter 
+        [panelSizes]="[25, 75]" 
+        class="w-full"
+        [style]="{ height: '100%' }" 
+        styleClass="mb-5">
+        <ng-template pTemplate>
+            <div class="w-full h-full">
+                <router-outlet name="contents"/>
+            </div>
+        </ng-template>
+        <ng-template pTemplate>
+            <div class="flex justify-content-center px-3 w-full overflow-auto">
+                <div [style]="{maxWidth: '50rem'}">
+                    <router-outlet name="article"/>
+                </div>
+            </div>
+        </ng-template>
+    </p-splitter>
+</div>
